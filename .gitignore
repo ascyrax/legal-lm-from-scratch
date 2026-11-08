@@ -1,0 +1,17 @@
+# Model weights / checkpoints (not allowed in the submission; too big for GitHub)
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# macOS junk
+.DS_Store
+
+# Course material and starter code (instructors' files, not ours to republish)
+general/
+
+# Older duplicates of the Phase-1 submissions
+old + misc/
+
+# Private notes and chat transcripts with Claude
+claude_capstone_folder/

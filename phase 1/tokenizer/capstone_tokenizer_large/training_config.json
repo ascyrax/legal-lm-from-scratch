@@ -1,0 +1,15 @@
+{
+  "repo": "Exploration-Lab/CS-781-Capstone",
+  "prefix": "Phase_1_Pretraining/Train",
+  "budgets_mb": {
+    "train_acts.json": 300,
+    "train_supreme_court.json": 300,
+    "train_tribunals.json": 500,
+    "train_high_courts.json": 900
+  },
+  "field": null,
+  "min_doc_chars": 200,
+  "max_doc_chars": 50000,
+  "min_freq_for_counts": 5,
+  "trained_at": "2026-10-02 17:26:04"
+}
