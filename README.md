@@ -33,9 +33,11 @@ phase 1/ … phase 7/            one folder per phase
 phase 1/tokenizer/             byte-level BPE tokenizer (code + trained vocab/merges)
 ```
 
-Every run folder contains the **notebook with all its outputs** (as executed on Kaggle) and the **`submission*.zip`** uploaded to Codabench, which has `prediction.json` at its root.
+Every run folder contains the **notebook with all its outputs** (as executed on Kaggle) and the **submission zip** uploaded to Codabench, which has `prediction.json` at its root.
 
-- **Extra Phase-2 folders.** `after kd code*/` holds a resubmission made after the KD export cell was added (same model and method), and `enc dec/method_full/` holds the full-fine-tuning submission.
+Zips are named `submission_p<phase>_<model>_<method>.zip`, e.g. `submission_p4_dec02_lorma.zip`. The model codes are `dec01`, `dec02`, `dec03`, `encdec` and `kd_student`.
+
+- **Extra Phase-2 folders.** `after kd code*/` holds a resubmission (`*_rerun.zip`) made after the KD export cell was added (same model and method), and `enc dec/method_full/` holds the full-fine-tuning submission.
 - **Model weights are not included.** That is a course rule, and they are 200+ MB each. Running the Phase-1 notebooks reproduces them; see [Reproducing](#reproducing-the-experiments).
 - **Metric conventions.** Unless stated otherwise, scores below are on each phase's **dev split**, untuned, as logged in the notebooks. Codabench test scores come from the leaderboard.
 
@@ -87,12 +89,12 @@ The tokenizer averages about 1.25–1.42 tokens per word. `capstone_tokenizer_la
 | Folder | Notebook | Purpose |
 |---|---|---|
 | `decoder 01/` | `caps-p1-dec-01-train.ipynb` | Training run (full loss curve). Its own submission had some very short outputs (min 1 word). |
-| | `caps-p1-dec-01-inference-fixed.ipynb` | Reloads the **same checkpoint** (verifies val loss 2.1168 exactly), then regenerates the submission with fixed decoding (mean 127.1 words) → `inference_fixed/submission.zip` |
+| | `caps-p1-dec-01-inference-fixed.ipynb` | Reloads the **same checkpoint** (verifies val loss 2.1168 exactly), then regenerates the submission with fixed decoding (mean 127.1 words) → `submission_p1_dec01_inference_fixed.zip` |
 | `decoder 02/` | `caps-p1-dec-02.ipynb` | Training + **three submissions from the same weights** with different decoding (`v1` greedy, `v2` T=0.7 / top-p 0.9, `v3` T=0.5 / top-p 0.9) |
 | `decoder 03/` | `caps-p1-dec-03.ipynb` | Training + submission (greedy, repetition penalty 1.1) |
 | `enc dec/` | `caps-p1-encdec.ipynb` | **Final encoder-decoder (v2)**: self-tests (KV cache, bidirectionality, MLM masking), training, decoding sweep, submission |
 | | `caps-p1-encdec-causal-enc.ipynb` | **First version (v1)**: training run (10,971 steps, val 2.40) |
-| | `caps-p1-encdec-causal-enc-inference.ipynb` | v1 inference with fixed generation code → `causal_encoder/submission.zip` |
+| | `caps-p1-encdec-causal-enc-inference.ipynb` | v1 inference with fixed generation code → `submission_p1_encdec_v1_causal.zip` |
 
 **Two bugs found and fixed along the way** (documented honestly):
 - **Dec-01 is NoPE.** A wiring bug meant RoPE was never applied, so Dec-01 trained with **no positional encoding**. It still learns word order, because the causal mask itself leaks position: token *t* attends to exactly *t* tokens. It is reported as a NoPE decoder. Consequence for later phases: Dec-01 cannot be made bidirectional, since the causal mask is its only source of order.
