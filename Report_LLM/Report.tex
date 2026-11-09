@@ -1,0 +1,317 @@
+\documentclass[11pt, oneside]{article}
+\usepackage[margin=1in]{geometry}
+\geometry{letterpaper}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[numbers]{natbib}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{setspace}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+% ============================================================
+% TITLE BLOCK --- students must keep this format
+% Replace placeholders. Do not redesign the title page.
+% Filename of the compiled PDF must be:
+% CS781-CP-[Firstname]-[Lastname]-[RollNo]-report.pdf
+% ============================================================
+\title{CS781 Capstone Project:\\
+In-House Legal Intelligence System}
+\author{
+    FirstName $<$Middle Name if any$>$ LastName  \\
+    Roll Number \\
+    {\tt \{userid\}@iitk.ac.in}\\
+    Indian Institute of Technology Kanpur (IIT Kanpur)
+}
+\date{}
+\begin{document}
+\maketitle
+\begin{abstract}
+Write a concise abstract (maximum 150 words) summarizing:
+(i)~the problem (confidential, self-hosted legal NLP);
+(ii)~the seven-phase pipeline you built;
+(iii)~your Phase-1 foundation model (size, architecture family, training data mix);
+(iv)~how that foundation was (or was not) transferred to later phases;
+(v)~the most important experimental findings.
+Do not list every hyperparameter here. Do not paste leaderboard screenshots into the abstract.
+\end{abstract}
+% ============================================================
+\section*{Important Guidelines
+(remove this entire section before final submission)}
+% ============================================================
+\begin{enumerate}[leftmargin=*]
+    \item Follow the sections given below. The numbered sections are compulsory. You may add subsections and a modest number of extra figures/tables \emph{inside} these sections. Do not rename, drop, or reorder the top-level sections.
+    \item \textbf{Maximum length: 10 pages} excluding references and the LLM Usage Declaration. Not even a single character more on the counted pages. References and the LLM declaration may use additional pages. This is a strict limit. A report that exceeds the limit will receive zero for the report component.
+    \item Write in continuous academic prose, not as a bullet dump. The itemized prompts under each section are a checklist of what the TAs expect to see; they are not a license to submit an outline.
+    \item There should be no grammar or spelling mistakes. Use a grammar checker.
+    \item Plagiarism is treated as an academic-integrity violation. Cite every paper, blog, repository, tutorial, and external snippet you used. Explain methods in your own words. Copied or closely paraphrased reports, and reports that are substantially similar across students, can lead to an F grade.
+    \item Cite papers with \texttt{\textbackslash cite\{...\}} as in \cite{vaswani2017attention}. 
+    \item All mathematical expressions must be written in \LaTeX.
+    \item Figures must be high resolution (vector PDF/SVG preferred). Do not screenshot tables from papers or from Codabench and paste them as images if you can typeset them. Every borrowed figure needs a citation. 
+    \item Use \LaTeX{} quotation marks: ``like this'', not "like this".
+    \item In the final PDF, delete this guidelines section.
+    \item \textbf{LLM usage is allowed but the report should not look LLM generated as we want our report to look more human generated so that humans will be more likely to be attracted to the report.} LLM usage is allowed to generate the report, but make sure that the LLM you use, should make the report look like human generated and decent PG level report. Reports which look like LLM generated will be asked to resubmit the report until the LLM generating the report makes the report feel like human generated.
+    \item Creativity, controlled ablations, honest negative results, and clear visualizations will be rewarded. A weaker model with rigorous analysis is worth more than an unexplained high score.
+\end{enumerate}
+% ============================================================
+\section{Competition Result}
+% ============================================================
+\noindent
+\textbf{Codabench username:} \_\_\_\_\_\_\_\_\_\_\_
+\hfill
+\textbf{Roll number:} \_\_\_\_\_\_\_\_\_\_\_
+\medskip
+\noindent
+Report the \emph{best valid} score you obtained for each phase, together with the corresponding leaderboard rank at the time of report freeze. 
+\begin{table}[H]
+\centering
+\caption{Official phase scores and ranks. Fill every cell. State the date on which ranks were recorded.}
+\label{tab:leaderboard}
+\begin{tabular}{clccc}
+\toprule
+Phase & Task & Primary metric (value) & Rank & Valid submissions \\
+\midrule
+1 & Legal LM Pretraining &  &  &  \\
+2 & Legal NER &  &  &  \\
+3 & Rhetorical role prediction &  &  &  \\
+4 & Court judgment prediction &  &  &  \\
+5 & Legal statute identification &  &  &  \\
+6 & Abstractive summarization &  &  &  \\
+7 & Prior Case Retrieval (PCR) &  &  &  \\
+\bottomrule
+\end{tabular}
+\end{table}
+\noindent
+\textbf{Total valid Codabench submissions across all phases:} \_\_\_\_
+\quad
+\textbf{Date ranks were recorded:} \_\_\_\_
+\medskip
+A minimum of 4 \emph{distinct} submissions per phase is mandatory. Repeated identical dumps do not count. In one or two sentences, state whether you met the per-phase minimum and, if not, why.
+% ============================================================
+\section{Introduction and Problem Description}
+% ============================================================
+Cover the following in connected paragraphs (not as a numbered list in the submitted report):
+\begin{itemize}[leftmargin=*]
+    \item Motivation
+    \item A precise statement of each task (input, output schema, primary metric).
+    \item Constraints that shaped design: 50M--300M Phase-1 parameter cap, no pretrained LMs for the foundation, no external legal corpora, Colab/Kaggle-style compute, strict span matching for NER, multi-label statutes, BERTScore for summarization.
+    \item High-level research questions you actually investigated (tokenizer, data mix, transfer from Phase~1, long-document encoding, decoding, thresholding, etc.).
+    \item Scope statement: what you built end-to-end, and what you deliberately did not attempt.
+\end{itemize}
+% ============================================================
+\section{Data Analysis and Preprocessing}
+% ============================================================
+This section is a grading criterion. Do not skip it or reduce it to ``we loaded the Hugging Face dataset''.
+\subsection{Sources and official splits}
+\begin{itemize}[leftmargin=*]
+ 
+\end{itemize}
+\subsection{Corpus statistics that actually informed design}
+\begin{itemize}[leftmargin=*]
+    \item Phase~1: token counts per source (Acts, High Courts, Supreme Court, Tribunals), document-length histograms, vocabulary / domain shift across sources, why you mixed sources the way you did (or why you trained on a subset).
+    \item Phase~2: label frequency of the 12 entity types, span-length distribution, overlapping / nested / adjacent spans if present, boilerplate that produces false positives.
+    \item Phase~3: role distribution in CL vs.\ IT, sentence length, and rare roles such as Dissent or PrecedentOverruled.
+    \item Phase~4: class balance of $0$ vs.\ $1$, document length, whether outcome-bearing text sits at the end of the judgment.
+    \item Phase~5: number of distinct statute IDs, labels per document (histogram), long-tail / rare statutes.
+    \item Phase~6: document vs.\ summary length, compression ratio, n-gram overlap with the source (extractiveness).
+    \item Phase~7: number of query documents, candidate pool size, average number of relevant prior cases per query, length distribution of queries vs.\ candidates, and any temporal or court-level structure in the official splits.
+\end{itemize}
+Include at least two figures or tables of your own (not screenshots of the dataset card).
+\subsection{Preprocessing}
+\begin{itemize}[leftmargin=*]
+    \item Tokenization, lowercasing, punctuation, Unicode / Indian legal citations, whitespace that would shift Phase~2 character offsets.
+    \item How you preserved character offsets for L-NER. This is a common source of silent zeros on the leaderboard; describe the alignment procedure.
+    \item Sentence segmentation for Phase~3 and any mismatch with the provided sentence lists.
+    \item Truncation / chunking / hierarchical packing for long documents in Phases~4--6.
+    \item How you encoded query and candidate documents for Phase~7 (shared truncation policy, special tokens, or separate packing).
+\end{itemize}
+% ============================================================
+\section{Approach and Model Evolution}
+% ============================================================
+Tell a chronological design story, then specify the final system. TAs should be able to re-implement the final pipeline from this section alone.
+\subsection{Phase-1 foundation model}
+\begin{itemize}[leftmargin=*]
+    \item Architecture you \emph{designed} (layers, heads, hidden size, FFN size, positional scheme, normalization, activation). Include a parameter count and a diagram. State how you verified the 50M--300M bound.
+    \item Tokenizer: official vs.\ custom; vocab size; how legal citations / section symbols / party names are handled.
+    \item Training objective, context / block length, data-mixing policy across the four sources, token budget actually consumed.
+    \item Decoding used at submission time (greedy, temperature, top-$k$, top-$p$, repetition penalty, length targeting for 128 words).
+    \item What you tried first, what failed.
+\end{itemize}
+\subsection{Transfer protocol (Phases 2--7)}
+\begin{itemize}[leftmargin=*]
+    \item Did you initialize later encoders from the Phase-1 checkpoint, train task models from scratch, or use a hybrid (frozen embeddings + task head, adapters, etc.)?
+    \item Describe all finetuning technique you implemented in each phase. Discuss the results.
+    \item A diagram of the overall system: one backbone, seven heads / seven separately fine-tuned descendants.
+\end{itemize}
+\subsection{Phase 2 - Legal NER}
+\begin{itemize}[leftmargin=*]
+    \item Span-extraction vs.\ token-classification-then-reconstruct-offsets. How character offsets are recovered exactly.
+    \item Label set of 12 types; how you handled multi-span documents and class imbalance.
+    \item Decoding: thresholding, n-best spans, overlap resolution.
+\end{itemize}
+\subsection{Phase 3 - Rhetorical role prediction}
+\begin{itemize}[leftmargin=*]
+    \item Sentence encoder and how much left / right context you condition on.
+    \item Joint vs.\ per-sentence classification; document-level CRF / transition constraints if used.
+    \item Domain shift between Corporate Law and IT, and whether you trained jointly or separately.
+\end{itemize}
+\subsection{Phase 4 - Court judgment prediction}
+\begin{itemize}[leftmargin=*]
+    \item Long-document encoder (truncation, CLS over chunks, hierarchical attention, use of Phase-2/3 structure as features).
+\end{itemize}
+\subsection{Phase 5 - Legal statute identification}
+\begin{itemize}[leftmargin=*]
+    \item Multi-label head (independent sigmoids, label-wise attention, etc.).
+    \item Thresholding / top-$k$ / tuned per-label thresholds.
+
+\end{itemize}
+\subsection{Phase 6 - Abstractive summarization}
+\begin{itemize}[leftmargin=*]
+    \item Encoder--decoder vs.\ decoder-only continuation; initialization from Phase~1.
+    \item Long-document chunk-then-merge vs.\ hierarchical encode.
+    \item Length control, coverage / repetition, and any post-training / alignment method (allowed if documented: data/feedback signal, how it was built from official data only, what changed).
+\end{itemize}
+\subsection{Phase 7 - Prior Case Retrieval (PCR)}
+\begin{itemize}[leftmargin=*]
+    \item Retrieval architecture (bi-encoder, cross-encoder, sparse+dense hybrid, or other). 
+    \item How query and candidate documents are encoded (shared encoder, separate towers, chunk aggregation).
+    \item Handling of long documents.
+    \item Failed approaches.
+\end{itemize}
+
+% ============================================================
+\section{Experiments and Implementation Details}
+% ============================================================
+\subsection{Compute and training protocol}
+\begin{itemize}[leftmargin=*]
+    \item Hardware (Colab/Kaggle GPU type, any local GPU), wall-clock per run, number of runs, checkpointing strategy (runs will be killed).
+    \item Optimizer, learning-rate schedule, warmup, batch / accumulation, dropout, weight decay, mixed precision, gradient clipping.
+    \item Early stopping rule and which local metric it tracked (val loss, perplexity, span-F1, \ldots).
+\end{itemize}
+\begin{table}[H]
+\centering
+\caption{Hyperparameters of the final model in each phase. Add rows as needed. One table per phase is acceptable if this becomes unreadable.}
+\label{tab:hparams}
+\begin{tabular}{lccccccc}
+\toprule
+Hyperparameter & P1 & P2 & P3 & P4 & P5 & P6 & P7 \\
+\midrule
+Parameters (M) &  &  &  &  &  &  &  \\
+Context length &  &  &  &  &  &  &  \\
+Peak LR &  &  &  &  &  &  &  \\
+Batch $\times$ accum. &  &  &  &  &  &  &  \\
+Epochs / steps &  &  &  &  &  &  &  \\
+Dropout &  &  &  &  &  &  &  \\
+Decoding / threshold &  &  &  &  &  &  &  \\
+\bottomrule
+\end{tabular}
+\end{table}
+\subsection{Local evaluation}
+\begin{itemize}[leftmargin=*]
+    \item How you built a labelled held-out split from public train/dev data.
+    \item Why local scores and Codabench scores diverged, if they did.
+\end{itemize}
+\subsection{Ablations and controlled comparisons}
+You are expected to show \emph{evidence} for each important claim (``custom tokenizer helped'', ``Phase-1 transfer helped'', ``hierarchical encoding helped''), give a comparison that changes one factor at a time. Negative ablations belong here; they are not a confession, they are the point of the course.
+% ============================================================
+\section{Results}
+% ============================================================
+\begin{itemize}[leftmargin=*]
+    \item Local-dev tables for every major variant, with the primary metric and the official secondary metrics.
+    \item Official Codabench numbers from Table~\ref{tab:leaderboard}.
+    \item Learning curves: Phase-1 train/val loss or perplexity vs.\ tokens; task-phase metric vs.\ epoch.
+    \item Which system won overall, and a causal explanation (not ``it trained longer'').
+\end{itemize}
+\begin{table}[H]
+\centering
+\caption{Template for per-phase variant comparison}
+\label{tab:variants}
+\begin{tabular}{ccc}
+\toprule
+Phase & Variant & Codabench primary metric \\
+\midrule
+1 &   &  \\
+1 &   &  \\
+2  &  &  \\
+2  &  &  \\
+\ldots & \ldots  & \ldots  \\
+\bottomrule
+\end{tabular}
+\end{table}
+% ============================================================
+\section{Error Analysis and Discussion}
+% ============================================================
+Do not write ``the model sometimes fails''. Show examples, counts, and a hypothesized mechanism.
+\subsection{Phase-wise failure modes}
+
+\subsection{What the metrics do not measure}
+A short, honest paragraph: ROUGE-L and BERTScore reward n-gram / embedding similarity to a hidden reference, not legal correctness. Strict span-F1 rewards offset perfection, not entity typing quality when the boundary is slightly off. Discuss the implications for a real firm deployment.
+\subsection{Limitations and what you would do next}
+Compute, context length, absence of external corpora, lack of human legal evaluation, error propagation if phases are pipelined rather than trained separately. Concrete next experiments, not vague ``try transformers''.
+\subsection{Surprising findings}
+Anything that contradicted your prior. One good unexpected result with evidence is worth more than three expected ones without it.
+% ============================================================
+\section{Conclusion}
+% ============================================================
+\begin{itemize}[leftmargin=*]
+    \item The two or three design choices that moved metrics, and the ones that did not.
+    \item The main lesson about training a compact legal LM under a parameter and data-source lock.
+\end{itemize}
+% ============================================================
+\section*{LLM Usage Declaration}
+% ============================================================
+Completing this section is mandatory. Inconsistent answers relative to the code and the prose will be treated as an integrity issue.
+\medskip
+\noindent
+\textbf{Q1.} Which Large Language Model(s), if any, did you use while completing the competition or writing this report? Give model name and vendor (e.g., none / ChatGPT-4.x / Gemini~x / Claude~x / Grok / Copilot / other). \\[0.6em]
+Answer: \underline{\hspace{0.88\textwidth}}
+\medskip
+\noindent
+\textbf{Q2.} For each row, mark Yes or No and state the purpose in one short phrase. 
+\begin{table}[H]
+\centering
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}|c|>{\raggedright\arraybackslash}p{7.2cm}}
+\toprule
+Part & Used LLM? & Purpose of using the LLM \\
+\midrule
+Understanding concepts / papers & Yes/No &  \\
+Ideation / brainstorming at a high level & Yes/No &  \\
+Debugging small ancillary snippets & Yes/No &  \\
+Plotting / visualization code & Yes/No &  \\
+Grammar / writing style of the report & Yes/No &  \\
+Report structure / section wording & Yes/No &  \\
+Designing the model architecture & Yes/No & \\
+Hyperparameter search / tuning & Yes/No &  \\
+Analysis of results / conclusions & Yes/No & \\
+Writing the core training / inference code & Yes/No &  \\
+Other (specify) & Yes/No &  \\
+\bottomrule
+\end{tabular}
+\end{table}
+\medskip
+\noindent
+\textbf{Q3.} Did you refer to sources other than lecture slides and an LLM?
+If yes, list them (papers, blogs, GitHub repositories, textbooks, official starter notebook, evaluation scripts). These must also appear in the bibliography when they influenced the method. \\[0.4em]
+Answer:
+\medskip
+\noindent
+\textbf{Q4.} Apart from any permitted LLM use, what was \emph{your} contribution? In 8--12 sentences describe your own understanding, architecture decisions, implementation, experiments, and analysis. Name at least two things you tried that failed and what you concluded from them.
+\medskip
+\noindent
+\vspace{1.4cm}
+\bibliographystyle{ieeetr}
+\bibliography{references}
+\end{document}

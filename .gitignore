@@ -15,3 +15,7 @@ old + misc/
 
 # Private notes and chat transcripts with Claude
 claude_capstone_folder/
+
+CS781-CP-*-report_code.zip
+CS781-CP-*-report_code/
+test/
