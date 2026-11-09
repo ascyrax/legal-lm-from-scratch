@@ -21,6 +21,24 @@ Small Transformer language models (54–63M parameters) **pretrained from scratc
 
 ---
 
+## Codabench test results (best submission per phase)
+
+| Phase | Task | Best run | Test score |
+|---|---|---|---|
+| 1 | Legal language modelling | Enc-Dec v2 (bidirectional encoder + MLM) | BERTScore F1 **0.836** · ROUGE-L 0.194 · BLEU-4 0.052 |
+| 2 | Legal NER | Enc-Dec encoder, full fine-tuning | strict macro-F1 **0.373** · P 0.325 · R 0.453 |
+| 3 | Rhetorical roles | Dec-03 + rsLoRA | macro-F1 **0.438** · P 0.440 · R 0.464 |
+| 4 | Judgment prediction | Dec-01 + LoRA | macro-F1 **0.725** · P 0.758 · R 0.667 |
+| 5 | Statute identification | KD student (teacher Dec-02 + LoRMA) | macro-F1 **0.440** · micro-F1 0.527 |
+| 6 | Summarization | KD student (teacher Enc-Dec + adapters) | BERTScore F1 **0.851** · ROUGE-1 0.588 · ROUGE-L 0.299 |
+| 7 | Prior case retrieval | KD student, single teacher (Dec-02 + LoRMA) | micro-F1@7 **0.439** · P 0.448 · R 0.430 |
+
+- The exact winning files are in `submissions_best/`. Each one is byte-identical in content to the run's zip in its phase folder.
+- **The distilled 36.6M student won three of the six downstream phases.** In Phases 6 and 7 its margin over the next run is within noise.
+- **Phase 2 per-label test F1** shows form-based entities are easy: DATE 0.89, COURT 0.78, STAT 0.69. Role-based entities are hard: APP 0.04, RESP 0.06, WIT 0.11. The model finds the party names but not which side they are on, which needs document-level reasoning.
+
+---
+
 ## Repository layout
 
 ```
@@ -31,6 +49,7 @@ phase 1/ … phase 7/            one folder per phase
   enc dec/                     runs on the encoder-decoder (its encoder in Phases 2–5, 7)
   kd student/                  knowledge-distillation student (7-block Dec-03)
 phase 1/tokenizer/             byte-level BPE tokenizer (code + trained vocab/merges)
+submissions_best/              the best Codabench submission of each phase
 ```
 
 Every run folder contains the **notebook with all its outputs** (as executed on Kaggle) and the **submission zip** uploaded to Codabench, which has `prediction.json` at its root.
